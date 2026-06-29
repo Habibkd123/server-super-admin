@@ -14,6 +14,11 @@ const themeSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    schoolId: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     primaryColor: { type: String, default: '#e63946' },
     secondaryColor: { type: String, default: '#457b9d' },
     accentColor: { type: String, default: '#f1faee' },

@@ -23,6 +23,8 @@ const colorField = z
 
 // ─── Theme Update Schema (Rule 7: Schema Integrity) ───────────────────────────
 const updateThemeSchema = z.object({
+  schoolId: z.string().optional(),
+  school_id: z.string().optional(),
   primaryColor: colorField,
   secondaryColor: colorField,
   accentColor: colorField,
@@ -148,9 +150,10 @@ const updateTheme = async (req, res, next) => {
     await snapshotTheme(existingTheme, req.admin?.email);
 
     // Upsert — create theme doc if it doesn't exist, update if it does
+    const effectiveSchoolId = data.schoolId || data.school_id || existingTheme?.schoolId || '';
     const theme = await Theme.findOneAndUpdate(
       { projectId },
-      { $set: { ...data, projectId } },
+      { $set: { ...data, projectId, schoolId: effectiveSchoolId } },
       { new: true, upsert: true, runValidators: true }
     );
 
@@ -174,6 +177,8 @@ const updateTheme = async (req, res, next) => {
       message: `Theme for "${projectId}" updated successfully.`,
       data: {
         projectId: theme.projectId,
+        schoolId: theme.schoolId || effectiveSchoolId,
+        school_id: theme.schoolId || effectiveSchoolId,
         theme: serializeTheme(theme),
         updatedAt: theme.updatedAt,
       },
